@@ -6,9 +6,8 @@ and Wallonia alike) from OpenStreetMap via the Overpass API, and writes
 them into app/src/main/assets/fritkots_fallback.json in the format the
 Android app expects.
 
-This is run automatically by .github/workflows/build.yml before every
-build, so the bundled offline dataset is refreshed from OSM on each
-release rather than hand-maintained. You can also run it yourself:
+It can be done by Refresh offline dataset from Action in Github of you can
+run it yourself:
 
     python3 scripts/fetch_fritkots.py
 
