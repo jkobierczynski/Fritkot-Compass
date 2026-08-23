@@ -13,9 +13,10 @@ data from OpenStreetMap.
   OSM nodes tagged as Belgian fry shops (`amenity=fast_food` + `cuisine=friture`,
   with a name-based fallback for untagged ones) within 20 km, re-querying as you
   move more than 300 m.
-- **Offline fallback**: if there's no connection, a small bundled sample list
-  (`app/src/main/assets/fritkots_fallback.json`) is used instead so the app still
-  shows something.
+- **Offline fallback**: if there's no connection, a bundled dataset
+  (`app/src/main/assets/fritkots_fallback.json`) is used instead so the app
+  still shows something — see [Offline dataset](#offline-dataset) below for
+  how it covers all of Belgium, not just one region.
 - **No external libraries**: no AndroidX, no Google Play Services, no
   network/JSON libraries — just the Android platform SDK and Kotlin's standard
   library. This keeps the build minimal and easy to reproduce.
@@ -85,6 +86,49 @@ If you'd rather build it locally: open the project folder in Android Studio
 (Giraffe or newer) and click Run, or from a terminal with the Android SDK
 installed run `./gradlew assembleDebug`.
 
+## Offline dataset
+
+The app's primary data source is always the live Overpass query — the
+offline dataset only kicks in when the phone has no connection. Belgium has
+no single official fritkot registry, so this dataset comes from
+OpenStreetMap, the same source the live query uses.
+
+**`scripts/fetch_fritkots.py`** queries Overpass for *every* node in Belgium
+tagged as a fry shop — one country-wide query (via OSM's `ISO3166-1=BE`
+area), so Brussels, Flanders and Wallonia are all covered by construction
+rather than by listing cities by hand. It writes the result straight into
+`app/src/main/assets/fritkots_fallback.json` in the format the app expects
+(name, coordinates, address).
+
+The environment this project was originally scaffolded in has a locked-down
+network that can't reach OpenStreetMap's services at all, so it could only
+ship a small, hand-picked seed (a few well-known Brussels fritkots plus
+generic placeholder pins for the other provincial capitals) as the in-repo
+starting point — replace it with the real dataset using one of the two
+options below (typically well over a thousand entries once refreshed).
+
+**The build itself (`build.yml`) does not re-fetch this on every push or
+release** — it just packages whatever `fritkots_fallback.json` is already
+committed, so ordinary builds are fast and don't depend on Overpass being up.
+Refreshing the dataset is a separate, deliberate step, since fritkots don't
+open/close often enough to need refetching on every release. Two ways to do
+it:
+
+1. **Run it yourself, whenever you like**, from any machine with normal
+   internet access, then commit the result like any other change:
+   ```
+   python3 scripts/fetch_fritkots.py
+   git add app/src/main/assets/fritkots_fallback.json
+   git commit -m "chore: refresh offline fritkot dataset"
+   git push
+   ```
+2. **Trigger the "Refresh offline dataset" GitHub Actions workflow**
+   (`.github/workflows/refresh-dataset.yml`) from the repo's Actions tab —
+   click it, hit "Run workflow", and it fetches and commits the refreshed
+   file for you, no local Python needed. It also runs automatically on the
+   1st of each month by default; delete the `schedule:` block in that file
+   if you'd rather it only ever run when you trigger it by hand.
+
 ## Signing
 
 `debug.keystore` at the repo root is a fixed (non-secret) signing key checked
@@ -126,9 +170,11 @@ app/src/main/java/be/fritkot/compass/
   OverpassClient.kt     – Overpass API query + offline fallback
   GeoUtils.kt            – haversine distance / bearing math
   Fritkot.kt              – data classes
-app/src/main/assets/fritkots_fallback.json  – small offline sample list
+app/src/main/assets/fritkots_fallback.json  – offline dataset (see Offline dataset)
 app/src/main/res/                             – layout, strings (en/nl/fr), colors, icon
-.github/workflows/build.yml                     – CI build (and release-on-tag)
+scripts/fetch_fritkots.py                       – (re)generates the offline dataset from OSM
+.github/workflows/build.yml                       – CI build (builds + release-on-tag only)
+.github/workflows/refresh-dataset.yml               – refreshes the dataset (manual or monthly)
 ```
 
 ## License

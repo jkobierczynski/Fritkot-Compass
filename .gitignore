@@ -10,3 +10,5 @@
 app/build/
 app/release/
 *.hprof
+__pycache__/
+*.pyc

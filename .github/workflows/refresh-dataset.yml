@@ -1,0 +1,40 @@
+name: Refresh offline dataset
+
+# Refreshes app/src/main/assets/fritkots_fallback.json from OpenStreetMap
+# (all of Belgium — Brussels, Flanders and Wallonia) and commits it to main.
+# This is intentionally SEPARATE from build.yml: it does not run on every
+# push or release, only when you trigger it.
+#
+# Two ways to trigger it:
+#   1. Manually: repo's Actions tab -> "Refresh offline dataset" -> Run workflow.
+#   2. On the schedule below (defaults to the 1st of every month). Delete the
+#      `schedule:` block if you'd rather it only ever run when you click the
+#      button.
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 3 1 * *'   # 03:00 UTC on the 1st of each month
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch latest fritkot dataset from OpenStreetMap
+        run: python3 scripts/fetch_fritkots.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add app/src/main/assets/fritkots_fallback.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh offline fritkot dataset from OpenStreetMap"
+            git push origin HEAD:main
+          else
+            echo "Dataset unchanged, nothing to commit."
+          fi

@@ -22,30 +22,142 @@
   },
   {
     "id": 4,
-    "name": "Frituur (sample pin near Antwerp centre)",
+    "name": "Frituur (sample pin, Anderlecht)",
+    "lat": 50.8371,
+    "lon": 4.3080,
+    "address": "Anderlecht, Brussels — approximate, verify locally"
+  },
+  {
+    "id": 5,
+    "name": "Frituur (sample pin, Schaerbeek)",
+    "lat": 50.8676,
+    "lon": 4.3738,
+    "address": "Schaerbeek, Brussels — approximate, verify locally"
+  },
+  {
+    "id": 6,
+    "name": "Frituur (sample pin, Antwerp centre)",
     "lat": 51.2194,
     "lon": 4.4025,
     "address": "Antwerp — approximate, verify locally"
   },
   {
-    "id": 5,
-    "name": "Frituur (sample pin near Ghent centre)",
+    "id": 7,
+    "name": "Frituur (sample pin, Ghent centre)",
     "lat": 51.0543,
     "lon": 3.7174,
     "address": "Ghent — approximate, verify locally"
   },
   {
-    "id": 6,
-    "name": "Frituur (sample pin near Bruges Markt)",
+    "id": 8,
+    "name": "Frituur (sample pin, Bruges Markt)",
     "lat": 51.2085,
     "lon": 3.2247,
     "address": "Bruges — approximate, verify locally"
   },
   {
-    "id": 7,
-    "name": "Friterie (sample pin near Liège centre)",
+    "id": 9,
+    "name": "Frituur (sample pin, Leuven centre)",
+    "lat": 50.8798,
+    "lon": 4.7005,
+    "address": "Leuven — approximate, verify locally"
+  },
+  {
+    "id": 10,
+    "name": "Frituur (sample pin, Mechelen centre)",
+    "lat": 51.0284,
+    "lon": 4.4809,
+    "address": "Mechelen — approximate, verify locally"
+  },
+  {
+    "id": 11,
+    "name": "Frituur (sample pin, Hasselt centre)",
+    "lat": 50.9307,
+    "lon": 5.3378,
+    "address": "Hasselt — approximate, verify locally"
+  },
+  {
+    "id": 12,
+    "name": "Frituur (sample pin, Kortrijk centre)",
+    "lat": 50.8279,
+    "lon": 3.2649,
+    "address": "Kortrijk — approximate, verify locally"
+  },
+  {
+    "id": 13,
+    "name": "Frituur (sample pin, Ostend centre)",
+    "lat": 51.2160,
+    "lon": 2.9260,
+    "address": "Ostend — approximate, verify locally"
+  },
+  {
+    "id": 14,
+    "name": "Frituur (sample pin, Aalst centre)",
+    "lat": 50.9378,
+    "lon": 4.0398,
+    "address": "Aalst — approximate, verify locally"
+  },
+  {
+    "id": 15,
+    "name": "Frituur (sample pin, Sint-Niklaas centre)",
+    "lat": 51.1656,
+    "lon": 4.1447,
+    "address": "Sint-Niklaas — approximate, verify locally"
+  },
+  {
+    "id": 16,
+    "name": "Friterie (sample pin, Liège centre)",
     "lat": 50.6326,
     "lon": 5.5797,
     "address": "Liège — approximate, verify locally"
+  },
+  {
+    "id": 17,
+    "name": "Friterie (sample pin, Namur centre)",
+    "lat": 50.4674,
+    "lon": 4.8720,
+    "address": "Namur — approximate, verify locally"
+  },
+  {
+    "id": 18,
+    "name": "Friterie (sample pin, Charleroi centre)",
+    "lat": 50.4108,
+    "lon": 4.4446,
+    "address": "Charleroi — approximate, verify locally"
+  },
+  {
+    "id": 19,
+    "name": "Friterie (sample pin, Mons centre)",
+    "lat": 50.4542,
+    "lon": 3.9522,
+    "address": "Mons — approximate, verify locally"
+  },
+  {
+    "id": 20,
+    "name": "Friterie (sample pin, Tournai centre)",
+    "lat": 50.6071,
+    "lon": 3.3891,
+    "address": "Tournai — approximate, verify locally"
+  },
+  {
+    "id": 21,
+    "name": "Friterie (sample pin, Verviers centre)",
+    "lat": 50.5896,
+    "lon": 5.8623,
+    "address": "Verviers — approximate, verify locally"
+  },
+  {
+    "id": 22,
+    "name": "Friterie (sample pin, La Louvière centre)",
+    "lat": 50.4790,
+    "lon": 4.1875,
+    "address": "La Louvière — approximate, verify locally"
+  },
+  {
+    "id": 23,
+    "name": "Friterie (sample pin, Arlon centre)",
+    "lat": 49.6836,
+    "lon": 5.8161,
+    "address": "Arlon — approximate, verify locally"
   }
 ]

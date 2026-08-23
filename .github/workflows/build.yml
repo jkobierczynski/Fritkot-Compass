@@ -26,6 +26,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # This build uses whatever app/src/main/assets/fritkots_fallback.json
+      # is already committed — it does NOT re-fetch from OpenStreetMap on
+      # every build/release. To refresh that dataset, run the separate
+      # "Refresh offline dataset" workflow (manually, whenever you want —
+      # see .github/workflows/refresh-dataset.yml), or run
+      # scripts/fetch_fritkots.py locally and commit the result yourself.
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
 
