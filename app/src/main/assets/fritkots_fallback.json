@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "name": "Maison Antoine",
+    "lat": 50.8395,
+    "lon": 4.3868,
+    "address": "Place Jourdan, 1040 Etterbeek (Brussels)"
+  },
+  {
+    "id": 2,
+    "name": "Frit Flagey",
+    "lat": 50.8264,
+    "lon": 4.3727,
+    "address": "Place Eugène Flagey, 1050 Ixelles (Brussels)"
+  },
+  {
+    "id": 3,
+    "name": "Fritland",
+    "lat": 50.8468,
+    "lon": 4.3517,
+    "address": "Rue Henri Maus, 1000 Brussels (near Grand Place)"
+  },
+  {
+    "id": 4,
+    "name": "Frituur (sample pin near Antwerp centre)",
+    "lat": 51.2194,
+    "lon": 4.4025,
+    "address": "Antwerp — approximate, verify locally"
+  },
+  {
+    "id": 5,
+    "name": "Frituur (sample pin near Ghent centre)",
+    "lat": 51.0543,
+    "lon": 3.7174,
+    "address": "Ghent — approximate, verify locally"
+  },
+  {
+    "id": 6,
+    "name": "Frituur (sample pin near Bruges Markt)",
+    "lat": 51.2085,
+    "lon": 3.2247,
+    "address": "Bruges — approximate, verify locally"
+  },
+  {
+    "id": 7,
+    "name": "Friterie (sample pin near Liège centre)",
+    "lat": 50.6326,
+    "lon": 5.5797,
+    "address": "Liège — approximate, verify locally"
+  }
+]

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fritkot Compass</string>
+    <string name="status_locating">Finding your location…</string>
+    <string name="status_searching">Searching for the nearest fritkot…</string>
+    <string name="status_offline">No connection — showing an offline sample list</string>
+    <string name="status_no_sensor">This device has no compass sensor. Distance still works.</string>
+    <string name="status_permission_needed">Location permission is needed to find your nearest fritkot.</string>
+    <string name="grant_permission">Grant permission</string>
+    <string name="retry">Retry</string>
+    <string name="distance_unit_m">%1$d m</string>
+    <string name="distance_unit_km">%1$.1f km</string>
+    <string name="unknown_name">Unnamed fritkot</string>
+    <string name="nearby_label">Nearby fritkots</string>
+</resources>

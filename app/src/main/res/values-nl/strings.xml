@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fritkot Kompas</string>
+    <string name="status_locating">Locatie bepalen…</string>
+    <string name="status_searching">Dichtstbijzijnde fritkot zoeken…</string>
+    <string name="status_offline">Geen verbinding — offline voorbeeldlijst</string>
+    <string name="status_no_sensor">Dit toestel heeft geen kompassensor. Afstand werkt wel.</string>
+    <string name="status_permission_needed">Locatietoestemming is nodig om je dichtstbijzijnde fritkot te vinden.</string>
+    <string name="grant_permission">Toestemming geven</string>
+    <string name="retry">Opnieuw proberen</string>
+    <string name="unknown_name">Naamloze fritkot</string>
+    <string name="nearby_label">Fritkots in de buurt</string>
+</resources>

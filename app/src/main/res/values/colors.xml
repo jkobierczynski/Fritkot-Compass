@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_dark">#1B1204</color>
+    <color name="bg_dark_variant">#2A1B08</color>
+    <color name="accent_gold">#F2B705</color>
+    <color name="accent_gold_dim">#8C6A1F</color>
+    <color name="fry_red">#D94A1E</color>
+    <color name="text_primary">#FFF6E5</color>
+    <color name="text_secondary">#CBB891</color>
+    <color name="dial_ring">#5A4522</color>
+</resources>
