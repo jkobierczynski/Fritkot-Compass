@@ -9,5 +9,5 @@
     <string name="grant_permission">Toestemming geven</string>
     <string name="retry">Opnieuw proberen</string>
     <string name="unknown_name">Naamloze fritkot</string>
-    <string name="nearby_label">Fritkots in de buurt</string>
+    <string name="nearby_label">Fritkots in de buurt — tik er een aan om te volgen</string>
 </resources>

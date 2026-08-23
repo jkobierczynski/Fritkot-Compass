@@ -4,6 +4,7 @@ package be.fritkot.compass
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -12,6 +13,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
@@ -40,12 +42,19 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
     private var isQueryInFlight = false
     private var nearby: List<FritkotWithBearing> = emptyList()
 
+    // Which fritkot the compass/distance is tracking. null means "follow the
+    // closest one automatically" (the default); once the user taps one of
+    // the up to 5 nearest in the list, this pins to that one by id so the
+    // app keeps pointing at it even if a different fritkot becomes closer.
+    private var selectedFritkotId: Long? = null
+
     private val requestCode = 4242
+    private val maxSelectable = 5
 
     // Re-query Overpass if the user has moved more than this many metres
     // since the last query, so the list stays relevant on a bike/car/on foot.
     private val requeryDistanceMeters = 300.0
-    private val searchRadiusMeters = 20_000
+    private val searchRadiusMeters = 30_000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -199,8 +208,7 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
             .sortedBy { it.distanceMeters }
 
         tvStatus.text = if (usedOfflineFallback) getString(R.string.status_offline) else ""
-        renderNearest()
-        renderNearbyList()
+        renderAll()
     }
 
     private fun recomputeAndRender(location: Location) {
@@ -212,27 +220,68 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
                 )
             }
             .sortedBy { it.distanceMeters }
-        renderNearest()
-        renderNearbyList()
+        renderAll()
     }
 
-    private fun renderNearest() {
-        val nearest = nearby.firstOrNull() ?: return
-        tvDistance.text = GeoUtils.formatDistance(nearest.distanceMeters)
-        tvName.text = nearest.fritkot.name ?: getString(R.string.unknown_name)
-        tvAddress.text = nearest.fritkot.address
-        compassView.targetBearingDegrees = nearest.bearingDegrees.toFloat()
+    // ---- Selection & rendering ------------------------------------------
+
+    /**
+     * Resolves which fritkot to display/point at: the explicitly selected
+     * one if it's still in [nearby], otherwise the closest one — which is
+     * also the default when nothing has been selected yet. If a selection
+     * no longer resolves (e.g. a fresh query no longer includes it), it's
+     * cleared so the app falls back to following the closest again.
+     */
+    private fun selectedTarget(): FritkotWithBearing? {
+        val id = selectedFritkotId
+        if (id != null) {
+            val match = nearby.find { it.fritkot.id == id }
+            if (match != null) return match
+            selectedFritkotId = null
+        }
+        return nearby.firstOrNull()
     }
 
-    private fun renderNearbyList() {
+    private fun renderAll() {
+        val target = selectedTarget()
+        renderTarget(target)
+        renderNearbyList(target)
+    }
+
+    private fun renderTarget(target: FritkotWithBearing?) {
+        if (target == null) return
+        tvDistance.text = GeoUtils.formatDistance(target.distanceMeters)
+        tvName.text = target.fritkot.name ?: getString(R.string.unknown_name)
+        tvAddress.text = target.fritkot.address
+        compassView.targetBearingDegrees = target.bearingDegrees.toFloat()
+    }
+
+    /** Shows the closest [maxSelectable] fritkots; tap one to track it instead of the closest. */
+    private fun renderNearbyList(target: FritkotWithBearing?) {
         llNearby.removeAllViews()
-        for (item in nearby.drop(1).take(5)) {
-            val row = TextView(this)
+        val selectableBackground = TypedValue().also {
+            theme.resolveAttribute(android.R.attr.selectableItemBackground, it, true)
+        }
+
+        for (item in nearby.take(maxSelectable)) {
+            val isSelected = target != null && item.fritkot.id == target.fritkot.id
             val label = item.fritkot.name ?: getString(R.string.unknown_name)
-            row.text = "$label — ${GeoUtils.formatDistance(item.distanceMeters)}"
-            row.setTextColor(0xFFCBB891.toInt())
-            row.textSize = 14f
-            row.setPadding(0, 8, 0, 8)
+
+            val row = TextView(this)
+            row.text = (if (isSelected) "▸ " else "   ") + "$label — ${GeoUtils.formatDistance(item.distanceMeters)}"
+            row.setTextColor(if (isSelected) 0xFFF2B705.toInt() else 0xFFCBB891.toInt())
+            row.typeface = Typeface.defaultFromStyle(if (isSelected) Typeface.BOLD else Typeface.NORMAL)
+            row.textSize = 15f
+            row.setPadding(12, 22, 12, 22)
+            row.isClickable = true
+            row.isFocusable = true
+            if (selectableBackground.resourceId != 0) {
+                row.setBackgroundResource(selectableBackground.resourceId)
+            }
+            row.setOnClickListener {
+                selectedFritkotId = item.fritkot.id
+                renderAll()
+            }
             llNearby.addView(row)
         }
     }

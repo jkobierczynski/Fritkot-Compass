@@ -11,12 +11,16 @@ data from OpenStreetMap.
 - **Distance**: shown in metres/kilometres, updates as you move.
 - **Live data**: queries the public [Overpass API](https://overpass-api.de) for
   OSM nodes tagged as Belgian fry shops (`amenity=fast_food` + `cuisine=friture`,
-  with a name-based fallback for untagged ones) within 20 km, re-querying as you
+  with a name-based fallback for untagged ones) within 30 km, re-querying as you
   move more than 300 m.
 - **Offline fallback**: if there's no connection, a bundled dataset
   (`app/src/main/assets/fritkots_fallback.json`) is used instead so the app
   still shows something — see [Offline dataset](#offline-dataset) below for
-  how it covers all of Belgium, not just one region.
+  how it covers all of Belgium, not just one region. The app only ever
+  *reads* this file at runtime — it's packaged inside the APK as a read-only
+  asset, so nothing the app does while running can change or overwrite it;
+  refreshing it is a separate, deliberate step you take (see below), not
+  something that happens as a side effect of using the app.
 - **No external libraries**: no AndroidX, no Google Play Services, no
   network/JSON libraries — just the Android platform SDK and Kotlin's standard
   library. This keeps the build minimal and easy to reproduce.

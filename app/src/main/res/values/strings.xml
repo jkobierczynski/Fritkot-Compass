@@ -11,5 +11,5 @@
     <string name="distance_unit_m">%1$d m</string>
     <string name="distance_unit_km">%1$.1f km</string>
     <string name="unknown_name">Unnamed fritkot</string>
-    <string name="nearby_label">Nearby fritkots</string>
+    <string name="nearby_label">Nearby fritkots — tap one to track it</string>
 </resources>

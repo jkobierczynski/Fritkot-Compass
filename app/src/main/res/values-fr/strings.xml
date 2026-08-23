@@ -9,5 +9,5 @@
     <string name="grant_permission">Autoriser</string>
     <string name="retry">Réessayer</string>
     <string name="unknown_name">Friterie sans nom</string>
-    <string name="nearby_label">Friteries à proximité</string>
+    <string name="nearby_label">Friteries à proximité — touchez-en une pour la suivre</string>
 </resources>
