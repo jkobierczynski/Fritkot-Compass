@@ -4,6 +4,8 @@ A small native Android app: point your phone and an arrow shows you the directio
 and distance to the nearest fritkot / frituur / friterie in Belgium, using live
 data from OpenStreetMap.
 
+![Fritkot Compass screenshot](Fritkot-Compass.jpg)
+
 - **Compass**: rotates with your phone (rotation vector sensor) and always points
   toward the nearest fritkot, not north.
 - **Distance**: shown in metres/kilometres, updates as you move.
@@ -128,3 +130,11 @@ app/src/main/assets/fritkots_fallback.json  – small offline sample list
 app/src/main/res/                             – layout, strings (en/nl/fr), colors, icon
 .github/workflows/build.yml                     – CI build (and release-on-tag)
 ```
+
+## License
+
+Licensed under the [GNU General Public License v3.0](LICENSE) or later.
+That means anyone is free to use, study, modify, and redistribute this app,
+including commercially — but any redistributed version (modified or not)
+must also be licensed under the GPL and come with its source code. See the
+[`LICENSE`](LICENSE) file for the full terms.
