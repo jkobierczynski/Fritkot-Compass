@@ -3,6 +3,7 @@ package be.fritkot.compass
 
 import android.Manifest
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.hardware.Sensor
@@ -29,6 +30,7 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
     private lateinit var tvAddress: TextView
     private lateinit var btnAction: Button
     private lateinit var btnDataSource: Button
+    private lateinit var btnOpenMap: Button
     private lateinit var llNearby: LinearLayout
 
     private lateinit var sensorManager: SensorManager
@@ -73,6 +75,7 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
         tvAddress = findViewById(R.id.tvAddress)
         btnAction = findViewById(R.id.btnAction)
         btnDataSource = findViewById(R.id.btnDataSource)
+        btnOpenMap = findViewById(R.id.btnOpenMap)
         llNearby = findViewById(R.id.llNearby)
 
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
@@ -94,6 +97,10 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
 
         btnDataSource.text = getString(R.string.use_offline)
         btnDataSource.setOnClickListener { toggleDataSource() }
+
+        btnOpenMap.setOnClickListener {
+            startActivity(Intent(this, MapActivity::class.java))
+        }
 
         if (hasLocationPermission()) {
             startLocationUpdates()

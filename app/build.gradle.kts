@@ -49,7 +49,15 @@ android {
         viewBinding = false
     }
 
-    // No AndroidX, no third-party libraries: keeps dependency resolution
-    // minimal and the app self-contained (only the Android platform SDK
-    // and the Kotlin standard library are required).
+    // Kept dependency-free (no AndroidX, no third-party libraries) for
+    // everything except the one thing that genuinely needs a real library:
+    // an interactive, pinch-zoomable OpenStreetMap view. Hand-rolling a
+    // slippy map (tile loading/caching, projection math, gesture handling)
+    // isn't a reasonable thing to build from scratch, so this uses osmdroid
+    // — a mature, actively maintained, Apache-2.0-licensed OSM map view for
+    // Android. See MapActivity.kt.
+}
+
+dependencies {
+    implementation("org.osmdroid:osmdroid-android:6.1.20")
 }

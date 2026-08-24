@@ -13,4 +13,9 @@
     <string name="nearby_label">Friteries à proximité — touchez-en une pour la suivre</string>
     <string name="use_offline">Utiliser la liste hors ligne</string>
     <string name="use_online">Utiliser en ligne (OpenStreetMap)</string>
+    <string name="open_map">Choisir un lieu sur la carte</string>
+    <string name="map_title">Choisir un lieu</string>
+    <string name="map_hint">Glissez pour déplacer, pincez pour zoomer, touchez un point pour y chercher</string>
+    <string name="map_nearby_label">Friteries les plus proches du point touché</string>
+    <string name="map_no_selection">Touchez la carte pour voir les friteries les plus proches à cet endroit</string>
 </resources>

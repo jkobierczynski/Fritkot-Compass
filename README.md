@@ -21,9 +21,14 @@ data from OpenStreetMap.
   asset, so nothing the app does while running can change or overwrite it;
   refreshing it is a separate, deliberate step you take (see below), not
   something that happens as a side effect of using the app.
-- **No external libraries**: no AndroidX, no Google Play Services, no
-  network/JSON libraries — just the Android platform SDK and Kotlin's standard
-  library. This keeps the build minimal and easy to reproduce.
+- **Interactive map**: a second screen ("Pick location on map") with a
+  draggable, pinch-to-zoom OpenStreetMap view — tap anywhere to search for
+  the nearest fritkots to that point instead of your current GPS location.
+  See [Interactive map](#interactive-map) below.
+- **Minimal dependencies**: no AndroidX, no Google Play Services, no
+  network/JSON libraries. The one exception is [osmdroid](#interactive-map)
+  for the map screen, since there's no reasonable way to hand-roll a
+  pinch-zoomable slippy map from scratch.
 - **Dutch, French and English** strings included, since it's a Belgian app.
 
 ## Getting the installable APK
@@ -89,6 +94,41 @@ way automatically.
 If you'd rather build it locally: open the project folder in Android Studio
 (Giraffe or newer) and click Run, or from a terminal with the Android SDK
 installed run `./gradlew assembleDebug`.
+
+## Interactive map
+
+`MapActivity.kt` (opened from the main screen's "Pick location on map"
+button) is a full OpenStreetMap view built on
+[osmdroid](https://github.com/osmdroid/osmdroid) — drag to pan, pinch to
+zoom, and a single tap drops a pin and searches from that point instead of
+your GPS location, showing (and marking on the map) the nearest fritkots to
+wherever you tapped. It reuses the exact same `OverpassClient` — including
+the offline/online toggle — as the main screen, just centred on the tapped
+point instead of your live location.
+
+osmdroid is this project's only real dependency — writing a pannable, zoomable map
+renderer with its own tile loading and caching from scratch isn't a
+reasonable thing to do by hand, and osmdroid is a mature, actively
+maintained, Apache-2.0-licensed library built for exactly this. It's
+compatible with this project's GPLv3 license (Apache-2.0 code can be
+included in a GPLv3 work), and it renders standard OpenStreetMap tiles,
+attributed on-screen via osmdroid's built-in copyright overlay, per OSM's
+usage policy.
+
+One honest caveat: everything else in this project could be verified inside
+the sandbox this was built in — resources compiled with `aapt`, and Kotlin
+fully type-checked against a real Android platform SDK. That sandbox's
+network is locked down to a small allow-list that excludes Maven Central,
+so osmdroid's actual library code could never be downloaded there, and
+`MapActivity.kt` could only be checked for plain Kotlin syntax errors, not
+fully type-checked against osmdroid's real API the way the rest of the
+codebase was. The method and class names used (`MapView`, `GeoPoint`,
+`Marker`, `MapEventsOverlay`, `Configuration`, etc.) were cross-checked
+against osmdroid's actual source on GitHub rather than relied on from
+memory, which gives good confidence — but GitHub Actions' first build of
+this file is the real test. If it fails, the error log will point straight
+at whatever's off, and it's very likely a small one-line fix (a slightly
+different method name or import) rather than anything structural.
 
 ## Offline dataset
 
@@ -163,17 +203,23 @@ key).
 Your location is used only on-device to compute distance/bearing and as the
 centre point of the Overpass query — it isn't sent anywhere except as
 latitude/longitude in that query to the Overpass API (a public OpenStreetMap
-service), and nothing is stored or tracked by the app itself.
+service), and nothing is stored or tracked by the app itself. The same
+applies to a point you tap on the map screen: those coordinates are used the
+same way, as the search centre, and nothing else. The map screen also
+requests map tile images from OpenStreetMap's tile servers for whatever area
+is currently in view (a normal part of how any map view works), which are
+cached on-device in the app's own cache folder.
 
 ## Project layout
 
 ```
 app/src/main/java/be/fritkot/compass/
   MainActivity.kt     – permissions, location updates, sensor handling, UI wiring
-  CompassView.kt       – the custom compass dial + arrow drawing
-  OverpassClient.kt     – Overpass API query + offline fallback
-  GeoUtils.kt            – haversine distance / bearing math
-  Fritkot.kt              – data classes
+  MapActivity.kt        – interactive OSM map screen (osmdroid)
+  CompassView.kt          – the custom compass dial + arrow drawing
+  OverpassClient.kt         – Overpass API query + offline fallback
+  GeoUtils.kt                 – haversine distance / bearing math
+  Fritkot.kt                    – data classes
 app/src/main/assets/fritkots_fallback.json  – offline dataset (see Offline dataset)
 app/src/main/res/                             – layout, strings (en/nl/fr), colors, icon
 scripts/fetch_fritkots.py                       – (re)generates the offline dataset from OSM
@@ -188,3 +234,9 @@ That means anyone is free to use, study, modify, and redistribute this app,
 including commercially — but any redistributed version (modified or not)
 must also be licensed under the GPL and come with its source code. See the
 [`LICENSE`](LICENSE) file for the full terms.
+
+This app depends on [osmdroid](https://github.com/osmdroid/osmdroid),
+licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+(compatible with GPLv3), and displays map data and tile imagery from
+[OpenStreetMap](https://www.openstreetmap.org/copyright), © OpenStreetMap
+contributors, available under the Open Database License.
