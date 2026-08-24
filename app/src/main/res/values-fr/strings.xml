@@ -4,10 +4,13 @@
     <string name="status_locating">Localisation en cours…</string>
     <string name="status_searching">Recherche de la friterie la plus proche…</string>
     <string name="status_offline">Pas de connexion — liste hors ligne</string>
+    <string name="status_offline_selected">Affichage de la liste hors ligne</string>
     <string name="status_no_sensor">Cet appareil n\'a pas de capteur boussole. La distance fonctionne quand même.</string>
     <string name="status_permission_needed">La localisation est nécessaire pour trouver la friterie la plus proche.</string>
     <string name="grant_permission">Autoriser</string>
     <string name="retry">Réessayer</string>
     <string name="unknown_name">Friterie sans nom</string>
     <string name="nearby_label">Friteries à proximité — touchez-en une pour la suivre</string>
+    <string name="use_offline">Utiliser la liste hors ligne</string>
+    <string name="use_online">Utiliser en ligne (OpenStreetMap)</string>
 </resources>

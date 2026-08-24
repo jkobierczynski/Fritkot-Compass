@@ -31,7 +31,22 @@
             android:textSize="14sp"
             android:gravity="center"
             android:layout_marginTop="6dp"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="8dp" />
+
+        <Button
+            android:id="@+id/btnDataSource"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/use_offline"
+            android:textAllCaps="false"
+            android:textColor="@color/accent_gold_dim"
+            android:textSize="13sp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:layout_marginBottom="8dp" />
 
         <be.fritkot.compass.CompassView
             android:id="@+id/compassView"

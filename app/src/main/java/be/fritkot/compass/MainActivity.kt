@@ -28,6 +28,7 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
     private lateinit var tvName: TextView
     private lateinit var tvAddress: TextView
     private lateinit var btnAction: Button
+    private lateinit var btnDataSource: Button
     private lateinit var llNearby: LinearLayout
 
     private lateinit var sensorManager: SensorManager
@@ -48,6 +49,11 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
     // app keeps pointing at it even if a different fritkot becomes closer.
     private var selectedFritkotId: Long? = null
 
+    // Data source the user picked: false = try the live Overpass query first
+    // (falling back to offline only on failure, the default); true = skip
+    // the network entirely and use the bundled offline list right away.
+    private var forceOffline = false
+
     private val requestCode = 4242
     private val maxSelectable = 5
 
@@ -66,6 +72,7 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
         tvName = findViewById(R.id.tvName)
         tvAddress = findViewById(R.id.tvAddress)
         btnAction = findViewById(R.id.btnAction)
+        btnDataSource = findViewById(R.id.btnDataSource)
         llNearby = findViewById(R.id.llNearby)
 
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
@@ -84,6 +91,9 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
                 requestLocationPermission()
             }
         }
+
+        btnDataSource.text = getString(R.string.use_offline)
+        btnDataSource.setOnClickListener { toggleDataSource() }
 
         if (hasLocationPermission()) {
             startLocationUpdates()
@@ -175,25 +185,58 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
         val previous = lastQueryLocation
         val moved = previous == null || previous.distanceTo(location) >= requeryDistanceMeters
         if (moved && !isQueryInFlight) {
-            lastQueryLocation = location
-            isQueryInFlight = true
-            tvStatus.text = getString(R.string.status_searching)
-            overpassClient.fetchNearby(
-                location.latitude,
-                location.longitude,
-                searchRadiusMeters,
-                object : OverpassClient.Callback {
-                    override fun onResult(fritkots: List<Fritkot>, usedOfflineFallback: Boolean) {
-                        isQueryInFlight = false
-                        onFritkotsLoaded(location, fritkots, usedOfflineFallback)
-                    }
-                }
-            )
+            performFetch(location)
         } else if (nearby.isNotEmpty()) {
             // Cheap update: recompute distance/bearing against the last known
             // fritkot list using the fresher location, without re-querying.
             recomputeAndRender(location)
         }
+    }
+
+    /** Runs a fetch (live or offline, per [forceOffline]) for the given location. */
+    private fun performFetch(location: Location) {
+        lastQueryLocation = location
+        isQueryInFlight = true
+        tvStatus.text = if (forceOffline) getString(R.string.status_offline_selected) else getString(R.string.status_searching)
+
+        val callback = object : OverpassClient.Callback {
+            override fun onResult(fritkots: List<Fritkot>, usedOfflineFallback: Boolean) {
+                isQueryInFlight = false
+                onFritkotsLoaded(location, fritkots, usedOfflineFallback)
+            }
+        }
+
+        if (forceOffline) {
+            overpassClient.fetchOfflineOnly(callback)
+        } else {
+            overpassClient.fetchNearby(location.latitude, location.longitude, searchRadiusMeters, callback)
+        }
+    }
+
+    /** Switches between the live query and the bundled offline list, and re-fetches right away. */
+    private fun toggleDataSource() {
+        forceOffline = !forceOffline
+        btnDataSource.text = getString(if (forceOffline) R.string.use_online else R.string.use_offline)
+        selectedFritkotId = null // the previous pick may not exist in the new source
+
+        val location = lastQueryLocation ?: getBestLastKnownLocation()
+        if (location != null && !isQueryInFlight) {
+            performFetch(location)
+        } else {
+            tvStatus.text = if (forceOffline) getString(R.string.status_offline_selected) else getString(R.string.status_locating)
+        }
+    }
+
+    /** Best-effort immediate location fix from whatever providers already have one cached, without waiting for a new update. */
+    private fun getBestLastKnownLocation(): Location? {
+        if (!hasLocationPermission()) return null
+        var best: Location? = null
+        for (provider in locationManager.getProviders(true)) {
+            @Suppress("MissingPermission")
+            val candidate = locationManager.getLastKnownLocation(provider) ?: continue
+            if (best == null || candidate.time > best!!.time) best = candidate
+        }
+        return best
     }
 
     private fun onFritkotsLoaded(location: Location, fritkots: List<Fritkot>, usedOfflineFallback: Boolean) {
@@ -207,7 +250,11 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
             }
             .sortedBy { it.distanceMeters }
 
-        tvStatus.text = if (usedOfflineFallback) getString(R.string.status_offline) else ""
+        tvStatus.text = when {
+            forceOffline -> getString(R.string.status_offline_selected)
+            usedOfflineFallback -> getString(R.string.status_offline)
+            else -> ""
+        }
         renderAll()
     }
 

@@ -50,6 +50,18 @@ class OverpassClient(private val appContext: Context) {
         }.start()
     }
 
+    /**
+     * Loads the bundled offline dataset directly, without attempting any
+     * network request at all. Used when the user has explicitly chosen
+     * "use offline list" instead of the live Overpass query.
+     */
+    fun fetchOfflineOnly(callback: Callback) {
+        Thread {
+            val fallback = loadOfflineFallback()
+            mainHandler.post { callback.onResult(fallback, true) }
+        }.start()
+    }
+
     private fun tryMirrors(lat: Double, lon: Double, radiusMeters: Int): List<Fritkot>? {
         val query = buildQuery(lat, lon, radiusMeters)
         for (base in mirrors) {
