@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -32,6 +33,7 @@ class MapActivity : Activity() {
     private lateinit var tvMapStatus: TextView
     private lateinit var btnMapDataSource: Button
     private lateinit var llMapNearby: LinearLayout
+    private lateinit var mapBottomPanel: View
     private lateinit var overpassClient: OverpassClient
 
     private var forceOffline = false
@@ -66,6 +68,7 @@ class MapActivity : Activity() {
         tvMapStatus = findViewById(R.id.tvMapStatus)
         btnMapDataSource = findViewById(R.id.btnMapDataSource)
         llMapNearby = findViewById(R.id.llMapNearby)
+        mapBottomPanel = findViewById(R.id.mapBottomPanel)
         overpassClient = OverpassClient(applicationContext)
 
         mapView.setTileSource(TileSourceFactory.MAPNIK)
@@ -206,9 +209,40 @@ class MapActivity : Activity() {
             row.setPadding(0, 12, 0, 12)
             row.isClickable = true
             row.setOnClickListener {
-                mapView.controller.animateTo(GeoPoint(item.fritkot.lat, item.fritkot.lon))
+                centerAboveBottomPanel(GeoPoint(item.fritkot.lat, item.fritkot.lon))
             }
             llMapNearby.addView(row)
         }
+    }
+
+    /**
+     * Centres the map on [target], but accounting for the bottom panel that
+     * covers the lower part of the screen. `MapView.controller.animateTo()`
+     * centres on the *full* view — since the panel with the status text,
+     * data-source button and fritkot list sits on top of the bottom of that
+     * view, a plain animateTo() puts the picked fritkot behind (or right at
+     * the edge of) the panel instead of visibly centred on the part of the
+     * map you can actually see. This nudges the real animation target south
+     * by half the panel's height (in map pixels, converted to latitude at
+     * the current zoom) so [target] itself ends up centred in the visible
+     * area above the panel.
+     */
+    private fun centerAboveBottomPanel(target: GeoPoint) {
+        val panelHeight = mapBottomPanel.height
+        val w = mapView.width
+        val h = mapView.height
+        if (panelHeight <= 0 || w <= 0 || h <= 0) {
+            // Not laid out yet (shouldn't normally happen once the list is
+            // visible and clickable) — fall back to plain centring.
+            mapView.controller.animateTo(target)
+            return
+        }
+
+        val proj = mapView.projection
+        val centerGeo = proj.fromPixels(w / 2, h / 2)
+        val shiftedGeo = proj.fromPixels(w / 2, h / 2 + panelHeight / 2)
+        val latDelta = centerGeo.latitude - shiftedGeo.latitude
+
+        mapView.controller.animateTo(GeoPoint(target.latitude - latDelta, target.longitude))
     }
 }

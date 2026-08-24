@@ -227,11 +227,52 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
         selectedFritkotId = null // the previous pick may not exist in the new source
 
         val location = lastQueryLocation ?: getBestLastKnownLocation()
-        if (location != null && !isQueryInFlight) {
-            performFetch(location)
-        } else {
-            tvStatus.text = if (forceOffline) getString(R.string.status_offline_selected) else getString(R.string.status_locating)
+        if (location != null) {
+            if (!isQueryInFlight) performFetch(location)
+            return
         }
+
+        if (forceOffline) {
+            // Reading the bundled offline list needs neither network nor a
+            // GPS fix, so don't make the user wait on a location just to
+            // see it. Show the names immediately; distances fill in the
+            // moment a real fix arrives, via the normal onLocationChanged
+            // path (lastQueryLocation is left null here on purpose so that
+            // path still treats the next fix as "moved").
+            loadOfflineWithoutLocation()
+        } else {
+            tvStatus.text = getString(R.string.status_locating)
+        }
+    }
+
+    /**
+     * Loads the bundled offline list with no location fix at all — used the
+     * moment the user switches to offline before GPS/network has produced
+     * any fix yet (e.g. right after a cold start). Distances/compass show
+     * as unknown ("—") until a real fix arrives; [onLocationChanged] then
+     * naturally re-fetches and fills them in, since [lastQueryLocation]
+     * stays null throughout this.
+     */
+    private fun loadOfflineWithoutLocation() {
+        if (isQueryInFlight) return
+        isQueryInFlight = true
+        tvStatus.text = getString(R.string.status_offline_selected)
+
+        overpassClient.fetchOfflineOnly(object : OverpassClient.Callback {
+            override fun onResult(fritkots: List<Fritkot>, usedOfflineFallback: Boolean) {
+                isQueryInFlight = false
+                // If the user flipped the toggle again, or a location fix
+                // already arrived, while this (effectively instant) read
+                // was in flight, let that newer state stand instead.
+                if (!forceOffline || lastQueryLocation != null) return
+
+                nearby = fritkots
+                    .sortedBy { it.name ?: "" }
+                    .map { FritkotWithBearing(fritkot = it, distanceMeters = Double.NaN, bearingDegrees = Double.NaN) }
+                tvStatus.text = getString(R.string.status_offline_selected)
+                renderAll()
+            }
+        })
     }
 
     /** Best-effort immediate location fix from whatever providers already have one cached, without waiting for a new update. */
@@ -307,7 +348,12 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
         tvDistance.text = GeoUtils.formatDistance(target.distanceMeters)
         tvName.text = target.fritkot.name ?: getString(R.string.unknown_name)
         tvAddress.text = target.fritkot.address
-        compassView.targetBearingDegrees = target.bearingDegrees.toFloat()
+        // No location fix yet means no real bearing to point at — leave the
+        // arrow as-is rather than snapping it to a bogus direction. It
+        // starts pointing correctly the instant a fix arrives.
+        if (!target.distanceMeters.isNaN()) {
+            compassView.targetBearingDegrees = target.bearingDegrees.toFloat()
+        }
     }
 
     /** Shows the closest [maxSelectable] fritkots; tap one to track it instead of the closest. */

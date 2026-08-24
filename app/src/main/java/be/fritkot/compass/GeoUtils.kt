@@ -40,12 +40,16 @@ object GeoUtils {
         return (Math.toDegrees(theta) + 360.0) % 360.0
     }
 
-    /** Formats a distance in metres as either "NNN m" (below 1 km) or "N.N km". */
+    /**
+     * Formats a distance in metres as either "NNN m" (below 1 km) or "N.N km".
+     * [Double.NaN] is used as the "unknown yet" sentinel (e.g. a fritkot
+     * list shown before a location fix arrives) and renders as "—".
+     */
     fun formatDistance(meters: Double): String {
-        return if (meters < 1000) {
-            "${meters.toInt()} m"
-        } else {
-            String.format("%.1f km", meters / 1000.0)
+        return when {
+            meters.isNaN() -> "—"
+            meters < 1000 -> "${meters.toInt()} m"
+            else -> String.format("%.1f km", meters / 1000.0)
         }
     }
 }
