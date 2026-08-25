@@ -4,6 +4,8 @@ A small native Android app: point your phone and an arrow shows you the directio
 and distance to the nearest fritkot / frituur / friterie in Belgium, using live
 data from OpenStreetMap.
 
+# Screenshot
+
 ![Fritkot Compass screenshot](Fritkot-Compass.jpg)
 
 - **Compass**: rotates with your phone (rotation vector sensor) and always points
@@ -251,7 +253,7 @@ is currently in view (a normal part of how any map view works), which are
 cached on-device in the app's own cache folder.
 
 ## Project layout
-
+ 
 ```
 app/src/main/java/be/fritkot/compass/
   MainActivity.kt     – permissions, location updates, sensor handling, UI wiring
