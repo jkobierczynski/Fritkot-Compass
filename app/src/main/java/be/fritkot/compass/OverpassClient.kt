@@ -127,8 +127,9 @@ class OverpassClient(private val appContext: Context) {
             val tags = el.optJSONObject("tags")
             val name = tags?.optString("name")?.takeIf { it.isNotBlank() }
             val address = buildAddress(tags)
+            val openingHours = tags?.optString("opening_hours")?.takeIf { it.isNotBlank() }
 
-            results.add(Fritkot(id = id, name = name, lat = lat, lon = lon, address = address))
+            results.add(Fritkot(id = id, name = name, lat = lat, lon = lon, address = address, openingHours = openingHours))
         }
         return results
     }
@@ -161,7 +162,8 @@ class OverpassClient(private val appContext: Context) {
                         name = o.optString("name"),
                         lat = o.optDouble("lat"),
                         lon = o.optDouble("lon"),
-                        address = o.optString("address", "")
+                        address = o.optString("address", ""),
+                        openingHours = o.optString("opening_hours").takeIf { it.isNotBlank() }
                     )
                 )
             }

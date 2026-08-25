@@ -20,4 +20,6 @@
     <string name="map_hint">Drag to move, pinch to zoom, tap anywhere to search from that point</string>
     <string name="map_nearby_label">Nearest fritkots to the tapped point</string>
     <string name="map_no_selection">Tap the map to see the nearest fritkots there</string>
+    <string name="status_closed_now">Closed now</string>
+    <string name="status_closing_soon">Closing soon (%1$d min)</string>
 </resources>

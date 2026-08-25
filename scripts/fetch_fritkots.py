@@ -23,6 +23,9 @@ Design notes:
   - Matches amenity=fast_food with cuisine=friture/frites/fries (the usual
     OSM tagging for a Belgian fry shop), plus a name-based fallback for
     the many fritkots that are tagged fast_food without a cuisine tag.
+  - Also captures each node's `opening_hours` tag, if present, so the app
+    can show open/closed/closing-soon status. Not every OSM node has this
+    tag — nodes without one simply get no status in the app.
   - Tries several public Overpass mirrors in turn, since any one of them
     can be temporarily overloaded or rate-limiting.
   - On failure, leaves the existing fritkots_fallback.json untouched and
@@ -111,6 +114,7 @@ def parse_elements(osm_json: dict) -> list:
             "lat": lat,
             "lon": lon,
             "address": build_address(tags),
+            "opening_hours": tags.get("opening_hours") or None,
         })
     return results
 

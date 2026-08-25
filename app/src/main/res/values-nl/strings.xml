@@ -18,4 +18,6 @@
     <string name="map_hint">Sleep om te verplaatsen, knijp om te zoomen, tik ergens om vanaf dat punt te zoeken</string>
     <string name="map_nearby_label">Dichtstbijzijnde fritkots bij het aangetikte punt</string>
     <string name="map_no_selection">Tik op de kaart om de dichtstbijzijnde fritkots daar te zien</string>
+    <string name="status_closed_now">Nu gesloten</string>
+    <string name="status_closing_soon">Sluit binnenkort (%1$d min)</string>
 </resources>

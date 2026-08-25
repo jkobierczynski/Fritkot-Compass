@@ -82,7 +82,17 @@
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
             android:gravity="center"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="2dp" />
+
+        <TextView
+            android:id="@+id/tvOpenStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginTop="4dp"
             android:layout_marginBottom="8dp" />
 
         <Button

@@ -8,4 +8,6 @@
     <color name="text_primary">#FFF6E5</color>
     <color name="text_secondary">#CBB891</color>
     <color name="dial_ring">#5A4522</color>
+    <color name="status_closed">#E5533D</color>
+    <color name="status_closing_soon">#F2994A</color>
 </resources>

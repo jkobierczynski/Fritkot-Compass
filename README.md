@@ -25,6 +25,10 @@ data from OpenStreetMap.
   draggable, pinch-to-zoom OpenStreetMap view — tap anywhere to search for
   the nearest fritkots to that point instead of your current GPS location.
   See [Interactive map](#interactive-map) below.
+- **Open now / closing soon / closed**: when OSM has opening-hours data for
+  a fritkot, its name (and its entry in the nearby list) turns orange if
+  it's about to close and red if it's already closed. See
+  [Opening hours](#opening-hours) below for what "known" depends on.
 - **Minimal dependencies**: no AndroidX, no Google Play Services, no
   network/JSON libraries. The one exception is [osmdroid](#interactive-map)
   for the map screen, since there's no reasonable way to hand-roll a
@@ -130,6 +134,42 @@ this file is the real test. If it fails, the error log will point straight
 at whatever's off, and it's very likely a small one-line fix (a slightly
 different method name or import) rather than anything structural.
 
+## Opening hours
+
+A fritkot's name (and its row in the "nearby" list, on both the main screen
+and the map screen) turns **orange** if it's open but closing within 30
+minutes, and **red** if it's currently closed — with a short label
+("Closing soon (12 min)" / "Closed now") next to it. If neither applies —
+it's open with no closing time imminent, or its status simply isn't known —
+nothing changes; it stays the normal color.
+
+This is driven entirely by OSM's `opening_hours` tag, which `OverpassClient`
+now reads from live query results and `fetch_fritkots.py` now captures into
+the offline dataset. **Not every OSM node has this tag** — a lot of small
+fritkots simply have no recorded hours — and untagged ones always show as
+"unknown" (no color), never guessed at. Coverage depends entirely on how
+complete OpenStreetMap's data is for a given fritkot; anyone can improve it
+by editing the node on [openstreetmap.org](https://www.openstreetmap.org).
+
+The actual interpreting is done on-device by `OpeningHours.kt`, a small,
+deliberately pragmatic reader of the `opening_hours` mini-language — not the
+full [OSM opening_hours spec](https://wiki.openstreetmap.org/wiki/Key:opening_hours),
+which also covers public/school holidays, month and week-of-year ranges,
+and more (that's genuinely a project of its own — there's a dedicated
+`opening_hours.js` library for exactly this reason). It handles the
+patterns that cover the vast majority of small food shops: `24/7`; weekday
+selectors like `Mo-Fr`, `Sa,Su`, or a single day; comma-separated time
+ranges per day (`11:30-14:00,17:30-22:00`); ranges that cross midnight
+(`20:00-02:00`); `off`/`closed`; and `;`-separated rules, with a later rule
+overriding an earlier one for the same day (so `Tu-Su 11:00-22:00; Mo off`
+behaves as expected). Anything using syntax outside that subset — `PH`,
+`SH`, month names, week numbers, parenthesised comments — is deliberately
+treated as *unknown* rather than misread, since showing no status is far
+better than confidently showing the wrong one for a real business's hours.
+Verified against a small set of hand-written test cases (including the
+overnight-crossing and rule-override behavior) run against the real
+implementation before this was shipped.
+
 ## Offline dataset
 
 The app's primary data source is always the live Overpass query — the
@@ -142,7 +182,7 @@ tagged as a fry shop — one country-wide query (via OSM's `ISO3166-1=BE`
 area), so Brussels, Flanders and Wallonia are all covered by construction
 rather than by listing cities by hand. It writes the result straight into
 `app/src/main/assets/fritkots_fallback.json` in the format the app expects
-(name, coordinates, address).
+(name, coordinates, address, opening hours where OSM has them).
 
 The environment this project was originally scaffolded in has a locked-down
 network that can't reach OpenStreetMap's services at all, so it could only
@@ -218,6 +258,7 @@ app/src/main/java/be/fritkot/compass/
   MapActivity.kt        – interactive OSM map screen (osmdroid)
   CompassView.kt          – the custom compass dial + arrow drawing
   OverpassClient.kt         – Overpass API query + offline fallback
+  OpeningHours.kt              – opening_hours parsing (open/closing soon/closed)
   GeoUtils.kt                 – haversine distance / bearing math
   Fritkot.kt                    – data classes
 app/src/main/assets/fritkots_fallback.json  – offline dataset (see Offline dataset)

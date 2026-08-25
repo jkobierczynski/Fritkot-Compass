@@ -18,4 +18,6 @@
     <string name="map_hint">Glissez pour déplacer, pincez pour zoomer, touchez un point pour y chercher</string>
     <string name="map_nearby_label">Friteries les plus proches du point touché</string>
     <string name="map_no_selection">Touchez la carte pour voir les friteries les plus proches à cet endroit</string>
+    <string name="status_closed_now">Fermé maintenant</string>
+    <string name="status_closing_soon">Ferme bientôt (%1$d min)</string>
 </resources>

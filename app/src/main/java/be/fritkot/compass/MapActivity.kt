@@ -44,6 +44,7 @@ class MapActivity : Activity() {
 
     private val searchRadiusMeters = 30_000
     private val maxShown = 5
+    private val closingSoonThresholdMinutes = 30
 
     // Default view when we have no location fix yet: centred on Belgium as
     // a whole (Brussels) rather than anywhere more specific.
@@ -203,8 +204,10 @@ class MapActivity : Activity() {
         for (item in items) {
             val row = TextView(this)
             val label = item.fritkot.name ?: getString(R.string.unknown_name)
-            row.text = "$label — ${GeoUtils.formatDistance(item.distanceMeters)}"
-            row.setTextColor(0xFFCBB891.toInt())
+            val display = displayStatus(item.fritkot.openingHours)
+            val suffix = display.label?.let { " · $it" } ?: ""
+            row.text = "$label — ${GeoUtils.formatDistance(item.distanceMeters)}$suffix"
+            row.setTextColor(display.color ?: 0xFFCBB891.toInt())
             row.textSize = 14f
             row.setPadding(0, 12, 0, 12)
             row.isClickable = true
@@ -212,6 +215,25 @@ class MapActivity : Activity() {
                 centerAboveBottomPanel(GeoPoint(item.fritkot.lat, item.fritkot.lon))
             }
             llMapNearby.addView(row)
+        }
+    }
+
+    /** Highlight color plus a short label for a fritkot's current opening_hours status — both null when it's open or unknown. Mirrors MainActivity's version (see OpeningHours). */
+    private data class DisplayStatus(val color: Int?, val label: String?)
+
+    private fun displayStatus(openingHours: String?): DisplayStatus {
+        val status = OpeningHours.status(openingHours)
+        return when {
+            status.state == OpenState.CLOSED ->
+                DisplayStatus(getColor(R.color.status_closed), getString(R.string.status_closed_now))
+            status.state == OpenState.OPEN &&
+                status.minutesUntilClose != null &&
+                status.minutesUntilClose <= closingSoonThresholdMinutes ->
+                DisplayStatus(
+                    getColor(R.color.status_closing_soon),
+                    getString(R.string.status_closing_soon, status.minutesUntilClose)
+                )
+            else -> DisplayStatus(null, null)
         }
     }
 

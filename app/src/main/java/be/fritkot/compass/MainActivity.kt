@@ -28,6 +28,7 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
     private lateinit var tvDistance: TextView
     private lateinit var tvName: TextView
     private lateinit var tvAddress: TextView
+    private lateinit var tvOpenStatus: TextView
     private lateinit var btnAction: Button
     private lateinit var btnDataSource: Button
     private lateinit var btnOpenMap: Button
@@ -64,6 +65,12 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
     private val requeryDistanceMeters = 300.0
     private val searchRadiusMeters = 30_000
 
+    // A fritkot open now but closing within this many minutes is flagged
+    // orange rather than the normal color; already-closed ones are red.
+    // See OpeningHours for what "known" depends on (many OSM nodes simply
+    // have no opening_hours tag, in which case status is left unmarked).
+    private val closingSoonThresholdMinutes = 30
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -73,6 +80,7 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
         tvDistance = findViewById(R.id.tvDistance)
         tvName = findViewById(R.id.tvName)
         tvAddress = findViewById(R.id.tvAddress)
+        tvOpenStatus = findViewById(R.id.tvOpenStatus)
         btnAction = findViewById(R.id.btnAction)
         btnDataSource = findViewById(R.id.btnDataSource)
         btnOpenMap = findViewById(R.id.btnOpenMap)
@@ -348,11 +356,36 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
         tvDistance.text = GeoUtils.formatDistance(target.distanceMeters)
         tvName.text = target.fritkot.name ?: getString(R.string.unknown_name)
         tvAddress.text = target.fritkot.address
+
+        val display = displayStatus(target.fritkot.openingHours)
+        tvName.setTextColor(display.color ?: getColor(R.color.text_primary))
+        tvOpenStatus.text = display.label ?: ""
+        tvOpenStatus.setTextColor(display.color ?: getColor(R.color.text_secondary))
+
         // No location fix yet means no real bearing to point at — leave the
         // arrow as-is rather than snapping it to a bogus direction. It
         // starts pointing correctly the instant a fix arrives.
         if (!target.distanceMeters.isNaN()) {
             compassView.targetBearingDegrees = target.bearingDegrees.toFloat()
+        }
+    }
+
+    /** How a fritkot's opening_hours (if any) should be shown: a highlight color plus a short label, or both null if it's open / unknown. */
+    private data class DisplayStatus(val color: Int?, val label: String?)
+
+    private fun displayStatus(openingHours: String?): DisplayStatus {
+        val status = OpeningHours.status(openingHours)
+        return when {
+            status.state == OpenState.CLOSED ->
+                DisplayStatus(getColor(R.color.status_closed), getString(R.string.status_closed_now))
+            status.state == OpenState.OPEN &&
+                status.minutesUntilClose != null &&
+                status.minutesUntilClose <= closingSoonThresholdMinutes ->
+                DisplayStatus(
+                    getColor(R.color.status_closing_soon),
+                    getString(R.string.status_closing_soon, status.minutesUntilClose)
+                )
+            else -> DisplayStatus(null, null)
         }
     }
 
@@ -366,10 +399,12 @@ class MainActivity : Activity(), SensorEventListener, LocationListener {
         for (item in nearby.take(maxSelectable)) {
             val isSelected = target != null && item.fritkot.id == target.fritkot.id
             val label = item.fritkot.name ?: getString(R.string.unknown_name)
+            val display = displayStatus(item.fritkot.openingHours)
+            val suffix = display.label?.let { " · $it" } ?: ""
 
             val row = TextView(this)
-            row.text = (if (isSelected) "▸ " else "   ") + "$label — ${GeoUtils.formatDistance(item.distanceMeters)}"
-            row.setTextColor(if (isSelected) 0xFFF2B705.toInt() else 0xFFCBB891.toInt())
+            row.text = (if (isSelected) "▸ " else "   ") + "$label — ${GeoUtils.formatDistance(item.distanceMeters)}$suffix"
+            row.setTextColor(display.color ?: if (isSelected) 0xFFF2B705.toInt() else 0xFFCBB891.toInt())
             row.typeface = Typeface.defaultFromStyle(if (isSelected) Typeface.BOLD else Typeface.NORMAL)
             row.textSize = 15f
             row.setPadding(12, 22, 12, 22)
