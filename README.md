@@ -251,7 +251,7 @@ is currently in view (a normal part of how any map view works), which are
 cached on-device in the app's own cache folder.
 
 ## Project layout
-
+ 
 ```
 app/src/main/java/be/fritkot/compass/
   MainActivity.kt     – permissions, location updates, sensor handling, UI wiring
