@@ -4,6 +4,9 @@ A small native Android app: point your phone and an arrow shows you the directio
 and distance to the nearest fritkot / frituur / friterie in Belgium, using live
 data from OpenStreetMap.
 
+# Screenshot
+
+![Fritkot Compass screenshot](Fritkot-Compass.jpg)
 
 - **Compass**: rotates with your phone (rotation vector sensor) and always points
   toward the nearest fritkot, not north.
