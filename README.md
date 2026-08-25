@@ -136,6 +136,8 @@ this file is the real test. If it fails, the error log will point straight
 at whatever's off, and it's very likely a small one-line fix (a slightly
 different method name or import) rather than anything structural.
 
+![Fritkot Compass Map screenshot](Fritkot-Compass-Map.jpg)
+
 ## Opening hours
 
 A fritkot's name (and its row in the "nearby" list, on both the main screen
