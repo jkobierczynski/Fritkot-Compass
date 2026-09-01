@@ -1208,6 +1208,14 @@
     "opening_hours": null
   },
   {
+    "id": 14128478352,
+    "name": "'t Voorschrift",
+    "lat": 51.2425172,
+    "lon": 4.823983,
+    "address": "Gierlebaan 3",
+    "opening_hours": "We-Su 11:30-20:00"
+  },
+  {
     "id": 9352677344,
     "name": "'t Voske",
     "lat": 51.3078916,
@@ -2958,6 +2966,14 @@
     "lon": 4.4115147,
     "address": "De Lescluzestraat 2, Antwerpen",
     "opening_hours": null
+  },
+  {
+    "id": 13544669596,
+    "name": "De Lilse Hoek",
+    "lat": 51.2379449,
+    "lon": 4.8246288,
+    "address": "Poederleese weg 2",
+    "opening_hours": "Mo-Tu 16:00-20:00; Fr 11:30-13:30; Sa 16:00-20:30; Su 11:30-20:00"
   },
   {
     "id": 12636815444,
@@ -8080,14 +8096,6 @@
     "opening_hours": "Mo-Sa 12:00-14:00, 17:00-22:30; Su 17:00-22:30"
   },
   {
-    "id": 13544669596,
-    "name": "Frituur De Lilse Hoek",
-    "lat": 51.2379449,
-    "lon": 4.8246288,
-    "address": "",
-    "opening_hours": null
-  },
-  {
     "id": 4241598496,
     "name": "Frituur De Lin",
     "lat": 50.9333037,
@@ -9069,7 +9077,7 @@
     "lat": 50.9095843,
     "lon": 4.1952208,
     "address": "",
-    "opening_hours": null
+    "opening_hours": "We,Th,Sa,Su 17:00-21:30, Fr 11:30-13:30, Fr 17:00-22:00; Mo,Tu off"
   },
   {
     "id": 10601743149,
@@ -14508,6 +14516,14 @@
     "name": "À la frite ardennaise",
     "lat": 49.8080758,
     "lon": 5.521246,
+    "address": "",
+    "opening_hours": null
+  },
+  {
+    "id": 2315619462,
+    "name": "À la frite chez Jojo",
+    "lat": 49.9491725,
+    "lon": 5.7106434,
     "address": "",
     "opening_hours": null
   },
